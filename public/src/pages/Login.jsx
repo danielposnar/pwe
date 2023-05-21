@@ -87,7 +87,7 @@ function Login() {
                     Login
                 </Button>{' '}
                 <Link to="/signup">
-                <Button variant="secondary" type="submit" className="justify-content-md-left">
+                <Button variant="secondary" className="justify-content-md-left">
                 I don't have an account (Sign up)
                 </Button>{' '} 
                 </Link>               

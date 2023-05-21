@@ -106,7 +106,7 @@ function SignUp() {
                     Sign up
                 </Button>{' '}
                 <Link to="/login">
-                <Button variant="secondary" type="submit" className="justify-content-md-left">
+                <Button variant="secondary" className="justify-content-md-left">
                     Already have an account (Login)
                 </Button>{' '} 
                 </Link>                         

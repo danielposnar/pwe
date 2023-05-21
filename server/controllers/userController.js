@@ -19,7 +19,7 @@ module.exports.login = async (req, res, next) => {
 
 module.exports.signup = async (req, res, next) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, password } = req.body;
     const usernameCheck = await User.findOne({ username });
     if (usernameCheck)
       return res.json({ msg: "Username already used", status: false });
@@ -42,6 +42,16 @@ module.exports.getAllUsers = async (req, res, next) => {
       "_id",
     ]);
     return res.json(users);
+  } catch (ex) {
+    next(ex);
+  }
+};
+
+module.exports.logOut = (req, res, next) => {
+  try {
+    if (!req.params.id) return res.json({ msg: "User id is required " });
+    onlineUsers.delete(req.params.id);
+    return res.status(200).send();
   } catch (ex) {
     next(ex);
   }
