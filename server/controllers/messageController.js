@@ -2,9 +2,9 @@ const Messages = require("../models/messageModel");
 
 module.exports.getMessages = async (req, res, next) => {
   try {
-    const conversation = req.body;
-    ges = await Messages.find({ conversation: conversation}).sort({ updatedAt: 1 });
-    res.json(messages);
+    const conversationId = req.params.id;
+    const messages = await Messages.find({ conversationId: conversationId}).sort({ updatedAt: 1 });
+    return res.json(messages);
   } catch (ex) {
     next(ex);
   }
@@ -12,11 +12,11 @@ module.exports.getMessages = async (req, res, next) => {
 
 module.exports.addMessage = async (req, res, next) => {
   try {
-    const { from, conversation, message } = req.body;
+    const { message, conversationId, sender } = req.body;
     const data = await Messages.create({
-      message: { text: message },
-      conversation: conversation,
-      sender: from,
+      message: message,
+      conversationId: conversationId,
+      sender: sender,
     });
 
     if (data) return res.json({ msg: "Message added successfully." });

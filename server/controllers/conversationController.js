@@ -21,7 +21,7 @@ module.exports.getAllUsersConversations = async (req, res, next) => {
       
       const conversations = await Conversation.find({ userIds: userId }).select([
         "conversationName",
-        "users",
+        "userIds",
         "_id",
       ]);
       return res.json(conversations);

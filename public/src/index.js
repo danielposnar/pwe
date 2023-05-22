@@ -10,15 +10,15 @@ root.render(
   <React.StrictMode>
     <Navbar bg="dark" variant="dark">
         <Container>
-          <Navbar.Brand >Chatovací aplikace</Navbar.Brand>
+          <Navbar.Brand >Chat app</Navbar.Brand>
           <Navbar.Toggle />
         <Navbar.Collapse className="justify-content-end">
           <Navbar.Text>
             author: Martin Vondráček
           </Navbar.Text>
         </Navbar.Collapse>
-        </Container>
-      </Navbar>
+      </Container>
+    </Navbar>
     <App />
   </React.StrictMode>
 );

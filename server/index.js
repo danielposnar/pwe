@@ -46,10 +46,21 @@ io.on("connection", (socket) => {
     onlineUsers.set(userId, socket.id);
   });
 
+  socket.on("send-conv", (data) => {
+    data.userIds.map((userId, index) =>{
+      const sendUserSocket = onlineUsers.get(userId);
+      if (sendUserSocket) {
+        socket.to(sendUserSocket).emit("recieve-conv", data);
+      }
+    });
+  });
+
   socket.on("send-msg", (data) => {
-    const sendUserSocket = onlineUsers.get(data.to);
-    if (sendUserSocket) {
-      socket.to(sendUserSocket).emit("msg-recieve", data.msg);
-    }
+    data.userIds.map((userId, index) =>{
+      const sendUserSocket = onlineUsers.get(userId);
+      if (sendUserSocket) {
+        socket.to(sendUserSocket).emit("msg-recieve", data.data);
+      }
+    });
   });
 });

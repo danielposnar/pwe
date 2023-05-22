@@ -4,13 +4,15 @@ import Button from 'react-bootstrap/Button'
 import ListGroup from 'react-bootstrap/ListGroup';
 import { useNavigate } from "react-router-dom";
 
-export default function Conversations({conversations, changeChat}) {
+export default function Conversations({conversations, changeConversation}) {
   const navigate = useNavigate();
+  const [currentSelected, setCurrentSelected] = useState(undefined);
 
-  const changeCurrentChat = (index, contact) => {
+  const changeCurrentConversation = (index, conversation) => {
     setCurrentSelected(index);
-    changeChat(contact);
+    changeConversation(conversation);
   };
+
 
   return ( 
     <Form >
@@ -19,8 +21,9 @@ export default function Conversations({conversations, changeChat}) {
       <ListGroup>
         {conversations.map((conversation, index) => {
           return (
-            <ListGroup.Item>
-              <Button variant="primary" type="submit" id={`default-${conversation._id}`} label={`${conversation.conversationName}`} key={index} style={{ width: '100%' }}>
+            <ListGroup.Item key={index}>
+              <Button variant= {`${
+                    index === currentSelected ? "primary" : "secondary"}`} id={`default-${conversation._id}`} label={`${conversation.conversationName}`} key={index} style={{ width: '100%' }} onClick={() => changeCurrentConversation(index, conversation)}>
               {conversation.conversationName}
               </Button>
             </ListGroup.Item>           

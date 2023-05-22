@@ -9,11 +9,12 @@ import axios from "axios";
 import { createNewConversation } from "../utils/APIRoutes";
 
 
-export default function Contacts({ contacts}) {
+export default function Contacts({ contacts, socket, handleNewConversation}) {
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState(undefined);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [conversationName, setConversationName] = useState("");
+  const [newConversation, setNewConversation] = useState(null);
 
   const toastOptions = {
     position: "bottom-right",
@@ -25,7 +26,6 @@ export default function Contacts({ contacts}) {
 
   const handleSelectedUsersChange = (event) =>  {
     const index = selectedUsers.indexOf(event.target.id);
-    console.log(selectedUsers.length);
     if(index === -1){
       selectedUsers.push(event.target.id);
     }else{
@@ -69,21 +69,40 @@ export default function Contacts({ contacts}) {
     } 
     return true;
   };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const allUserIds = selectedUsers.concat([currentUser._id]);
-    if (handleValidation()){
+    if (handleValidation()){     
+      
       const { data } = await axios.post(createNewConversation, {
          conversationName,
          userIds: allUserIds,
       });
+
       if (data.status === true) {
         
       }else{
         toast.error(data.msg, toastOptions);
-      }     
+      }   
+      if(socket.current){
+        console.log("send_conv");
+        socket.current.emit("send-conv", {
+          conversationName,
+          userIds: selectedUsers,
+       });
+      }
+      handleNewConversation({
+        conversationName,
+        selectedUsers,
+     });  
     }
   }
+
+  useEffect(() => {
+
+    SetCurrentUser();
+  }, []);
 
   return ( 
     <>
@@ -93,7 +112,7 @@ export default function Contacts({ contacts}) {
       <ListGroup>
         {contacts.map((contact, index) => {
           return (
-            <ListGroup.Item>
+            <ListGroup.Item key={`${contact._id}`}>
               <Form.Check id={`${contact._id}`} label={`${contact.username}`} key={index} style={{ width: '100%' }} onChange={handleSelectedUsersChange}/>
             </ListGroup.Item>           
           );
