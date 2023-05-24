@@ -4,7 +4,6 @@ import axios from 'axios';
 import { allUsersRoute, allUsersConversationRoute, host } from "../utils/APIRoutes";
 import Contacts from "../components/Contacts";
 import Container from 'react-bootstrap/Container';
-import Logout from "../components/Logout";
 import Conversations from "../components/Conversations";
 import NoChat from "../components/NoChat";
 import Row from "react-bootstrap/esm/Row";
@@ -16,20 +15,11 @@ function Chat() {
   const navigate = useNavigate();
   const socket = useRef();
   const [contacts, setContacts] = useState([]);
+  const [currentUser, setCurrentUser] = useState(undefined);
   const [conversations, setConversations] = useState([]);
   const [newConversation, setNewConversation] = useState(null);
-  const [currentUser, setCurrentUser] = useState(undefined);
+  const [newMessage, setNewMessage] = useState(null);
   const [currentConversation, setCurrentConversation] = useState(undefined);
-
-  async function FetchContactsData(){
-    const data = await axios.get(`${allUsersRoute}/${currentUser._id}`);
-    setContacts(data.data);
-  }
-
-  async function FetchConverationsData(){
-    const data = await axios.get(`${allUsersConversationRoute}/${currentUser._id}`);
-    setConversations(data.data);
-  }
 
   async function SetCurrentUser(){
     if (!localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)) {
@@ -61,19 +51,24 @@ function Chat() {
 
   useEffect( () => {
     if (currentUser) {
+
+      const  FetchContactsData = async() => {
+        const data = await axios.get(`${allUsersRoute}/${currentUser._id}`);
+        setContacts(data.data);
+      }
       FetchContactsData();
     }
   }, [currentUser]);
 
   useEffect( () => {
     if (currentUser) {
+      const FetchConverationsData = async() => {
+        const data = await axios.get(`${allUsersConversationRoute}/${currentUser._id}`);
+        setConversations(data.data);
+      }
       FetchConverationsData();
     }
   }, [currentUser]);
-
-  useEffect(() => {
-    newConversation && setConversations((prev) => [...prev, newConversation]);
-  }, [newConversation]);
 
   const handleChatChange = (conversation) => {  
     setCurrentConversation(conversation);
@@ -83,8 +78,12 @@ function Chat() {
     setNewConversation(conversation);
   };
 
+  useEffect(() => {
+    newConversation && setConversations((prev) => [...prev, newConversation]);
+  }, [newConversation]);
+
   return (
-    <div style={{ height: 600}}>
+    <div>
       <Container>
         <Row>
         <Col>
@@ -95,7 +94,7 @@ function Chat() {
           {currentConversation === undefined ? (
             <NoChat />
           ) : (
-            <ChatContainer class="h-25 d-inline-block" currentConversation={currentConversation} currentUser={currentUser} users={contacts}socket={socket}/>
+            <ChatContainer class="h-25 d-inline-block" currentConversation={currentConversation} currentUser={currentUser} socket={socket}/>
           )}
           </Row>
         </Col>

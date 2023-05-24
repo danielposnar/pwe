@@ -2,81 +2,61 @@ import React, { useState, useEffect, useRef } from "react";
 import { sendMessageRoute, recieveMessageRoute } from "../utils/APIRoutes";
 import axios from "axios";
 import ChatInput from "./ChatInput";
-import Col from "react-bootstrap/esm/Col";
-import Row from "react-bootstrap/esm/Row";
 
-export default function ChatContainer({ currentConversation, currentUser, users, socket }) {
+export default function ChatContainer({ currentConversation, currentUser, socket }) {
     const [messages, setMessages] = useState([]);
     const scrollRef = useRef();
     const [arrivalMessage, setArrivalMessage] = useState(null);
-    const usersMap = new Map();
-
-    async function GetMessages(){
-      const data = await JSON.parse(
-        localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
-      );
-      const mssgs = await axios.get(`${recieveMessageRoute}/${currentConversation._id}`);
-      if(currentConversation){
-      }
-      setMessages(mssgs.data);
-    };
 
     useEffect(() => {
-      users.map((user) =>{
-        usersMap.set(user._id, user.username);
-      });
-      usersMap.set(currentUser._id, currentUser.username);
-      console.log(usersMap);
-
       const getCurrentChat = async () => {
         if (currentConversation) {
-          GetMessages();
+          const mssgs = await axios.get(`${recieveMessageRoute}/${currentConversation._id}`)
+          setMessages(mssgs.data);
         }
       };
       getCurrentChat();
     }, [currentConversation]);
 
     const handleSendMessage = async (msg) => {
-      const data = await JSON.parse(
-        localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
-      );
-      socket.current.emit("send-msg", {
-        userIds: currentConversation.userIds,
-        data:{
-          message: msg,
-          conversationId: currentConversation._id,
-          sender: currentUser.username,
-        }   
-      });
-      await axios.post(sendMessageRoute, {
+      const messg= {
         message: msg,
         conversationId: currentConversation._id,
         sender: currentUser.username,
+      }
+      console.log(currentConversation.conversationName);
+      socket.current.emit("send-msg", {
+        userIds : currentConversation.userIds,
+        data : messg   
       });
-  
-      const msgs = [...messages];
-      msgs.push( msg );
-      setMessages(msgs);
+
+      const data = await axios.post(sendMessageRoute, messg);
+
+      handleNewMessage(messg);
     };
 
     useEffect(() => {
       if (socket.current) {
+        socket.current.off("msg-recieve");
         socket.current.on("msg-recieve", (msg) => {
-          console.log("recieved");
-          setArrivalMessage( msg );
+          handleNewMessage(msg);
         });
       }
-    }, []);
+    }, [currentConversation]);
   
     useEffect(() => {
       arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
     }, [arrivalMessage]);
-  
+    
+    const handleNewMessage =(message) => {
+      if(message.conversationId === currentConversation._id){
+        setArrivalMessage(message);
+      }
+    }
+
     useEffect(() => {
       scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);      
-
-      
+    }, [messages]);
 
 return(
   <div>
@@ -96,6 +76,7 @@ return(
             </div>
           );
         })}
+        <div ref={scrollRef}/>
     </div>
     <div>
       <ChatInput handleSendMessage={handleSendMessage}/>

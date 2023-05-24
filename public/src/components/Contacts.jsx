@@ -2,9 +2,6 @@ import React, { useState, useEffect } from "react";
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button'
 import ListGroup from 'react-bootstrap/ListGroup';
-import Col from "react-bootstrap/esm/Col";
-import Row from "react-bootstrap/esm/Row";
-import Logout from "../components/Logout";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -17,7 +14,6 @@ export default function Contacts({ contacts, socket, handleNewConversation}) {
   const [currentUser, setCurrentUser] = useState(undefined);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [conversationName, setConversationName] = useState("");
-  const [newConversation, setNewConversation] = useState(null);
 
   const toastOptions = {
     position: "bottom-right",
@@ -96,6 +92,7 @@ export default function Contacts({ contacts, socket, handleNewConversation}) {
           conversationName,
           selectedUsers,
        });  
+       setConversationName("");
         
       }else{
         toast.error(data.msg, toastOptions);
@@ -127,7 +124,7 @@ export default function Contacts({ contacts, socket, handleNewConversation}) {
       </div>
       <div>
       <Form.Group className="mb-3">
-        <Form.Control placeholder="Enter name of new conversation" label="newConversation" name="newConversation" min="3" onChange={handleConversationNameChange}/>
+        <Form.Control placeholder="Enter name of new conversation" label="newConversation" name="newConversation" min="3" value={conversationName} onChange={handleConversationNameChange}/>
       </Form.Group>
       <Form.Group className="mb-3">
         <Button variant="primary" type="submit">
