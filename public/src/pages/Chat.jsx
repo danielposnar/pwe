@@ -4,7 +4,7 @@ import axios from 'axios';
 import { allUsersRoute, allUsersConversationRoute, host } from "../utils/APIRoutes";
 import Contacts from "../components/Contacts";
 import Container from 'react-bootstrap/Container';
-import Logout from "./Logout";
+import Logout from "../components/Logout";
 import Conversations from "../components/Conversations";
 import NoChat from "../components/NoChat";
 import Row from "react-bootstrap/esm/Row";
@@ -75,8 +75,7 @@ function Chat() {
     newConversation && setConversations((prev) => [...prev, newConversation]);
   }, [newConversation]);
 
-  const handleChatChange = (conversation) => {
-    console.log(conversation.conversationName);
+  const handleChatChange = (conversation) => {  
     setCurrentConversation(conversation);
   };
 
@@ -85,32 +84,28 @@ function Chat() {
   };
 
   return (
-    <div>
+    <div style={{ height: 600}}>
       <Container>
         <Row>
         <Col>
         <Contacts contacts={contacts} socket={socket} handleNewConversation={handleNewConversation}/>
         </Col>
-        <Col>
-          <Row>
-            <Logout/>
-          </Row>
+        <Col xs={5}>
           <Row>
           {currentConversation === undefined ? (
             <NoChat />
           ) : (
-            <ChatContainer currentConversation={currentConversation} currentUser={currentUser} socket={socket}/>
+            <ChatContainer class="h-25 d-inline-block" currentConversation={currentConversation} currentUser={currentUser} users={contacts}socket={socket}/>
           )}
           </Row>
         </Col>
         <Col>
         <Conversations conversations={conversations} changeConversation={handleChatChange} currentUser={currentUser} socket={socket} handleNewConversation={handleNewConversation}/>
         </Col>
-        </Row>
-        
-        
+        </Row>      
       </Container>     
     </div>
+    
   )
 }
 

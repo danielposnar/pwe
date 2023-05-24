@@ -4,20 +4,25 @@ import Button from 'react-bootstrap/Button'
 import ListGroup from 'react-bootstrap/ListGroup';
 import { useNavigate } from "react-router-dom";
 
-export default function Conversations({conversations, changeConversation}) {
+export default function Conversations({conversations, changeConversation, socket, handleNewConversation}) {
   const navigate = useNavigate();
   const [currentSelected, setCurrentSelected] = useState(undefined);
 
   const changeCurrentConversation = (index, conversation) => {
     setCurrentSelected(index);
     changeConversation(conversation);
+    socket.current.on("recieve-conv", (data) => {
+      handleNewConversation(data);
+    });
   };
 
 
   return ( 
+    <>
+    <h2 style={{ height: 50}}>Conversations</h2>
+    <div style={{ height: 450}} class="overflow-auto">
     <Form >
-      <Form.Group className="mb-3">
-      <Form.Label >Conversations</Form.Label>
+      <Form.Group className="mb-3">      
       <ListGroup>
         {conversations.map((conversation, index) => {
           return (
@@ -32,6 +37,7 @@ export default function Conversations({conversations, changeConversation}) {
       </ListGroup>
       </Form.Group>
     </Form>
-    
+    </div>
+    </>   
   )
 }

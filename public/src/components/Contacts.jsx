@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button'
 import ListGroup from 'react-bootstrap/ListGroup';
+import Col from "react-bootstrap/esm/Col";
+import Row from "react-bootstrap/esm/Row";
+import Logout from "../components/Logout";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -81,21 +84,22 @@ export default function Contacts({ contacts, socket, handleNewConversation}) {
       });
 
       if (data.status === true) {
+        if(socket.current){
+          socket.current.emit("send-conv", {
+            _id: data.conversation._id,
+            conversationName,
+            userIds: allUserIds,
+         });
+        }
+        handleNewConversation({
+          _id: data.conversation._id,
+          conversationName,
+          selectedUsers,
+       });  
         
       }else{
         toast.error(data.msg, toastOptions);
       }   
-      if(socket.current){
-        console.log("send_conv");
-        socket.current.emit("send-conv", {
-          conversationName,
-          userIds: selectedUsers,
-       });
-      }
-      handleNewConversation({
-        conversationName,
-        selectedUsers,
-     });  
     }
   }
 
@@ -106,9 +110,10 @@ export default function Contacts({ contacts, socket, handleNewConversation}) {
 
   return ( 
     <>
-    <Form  onSubmit={handleSubmit}>
-      <Form.Group className="mb-3">
-      <Form.Label >Users</Form.Label>
+    <h2 style={{ height: 50}}>Users</h2>
+    <Form onSubmit={handleSubmit}>
+      <div style={{ height: 450}} class="overflow-auto">
+      <Form.Group className="mb-3">      
       <ListGroup>
         {contacts.map((contact, index) => {
           return (
@@ -119,6 +124,8 @@ export default function Contacts({ contacts, socket, handleNewConversation}) {
         })}
       </ListGroup>
       </Form.Group>
+      </div>
+      <div>
       <Form.Group className="mb-3">
         <Form.Control placeholder="Enter name of new conversation" label="newConversation" name="newConversation" min="3" onChange={handleConversationNameChange}/>
       </Form.Group>
@@ -127,6 +134,7 @@ export default function Contacts({ contacts, socket, handleNewConversation}) {
           Create conversation
         </Button>{' '}
       </Form.Group>
+      </div>     
     </Form>
     <ToastContainer />
     </> 

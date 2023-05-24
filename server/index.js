@@ -26,8 +26,6 @@ mongoose.connect(process.env.DB_URL,{
     console.log(err.message);
   });
 
-global.onlineUsers = new Map();
-
 const server = app.listen(process.env.PORT, () =>
   console.log(`Server started on ${process.env.PORT}`)
 );
@@ -40,6 +38,7 @@ const io = socket(server, {
 });
 
 global.onlineUsers = new Map();
+
 io.on("connection", (socket) => {
   global.chatSocket = socket;
   socket.on("add-user", (userId) => {
@@ -56,11 +55,16 @@ io.on("connection", (socket) => {
   });
 
   socket.on("send-msg", (data) => {
-    data.userIds.map((userId, index) =>{
-      const sendUserSocket = onlineUsers.get(userId);
-      if (sendUserSocket) {
-        socket.to(sendUserSocket).emit("msg-recieve", data.data);
-      }
-    });
+    if(data.userIds){
+      data.userIds.map((userId, index) =>{
+        const sendUserSocket = onlineUsers.get(userId);
+        if (sendUserSocket) {         
+          socket.to(sendUserSocket).emit("msg-recieve", data.data);
+        }
+      });
+    }else{
+      
+    }
+    
   });
 });

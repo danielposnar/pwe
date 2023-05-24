@@ -2,21 +2,32 @@ import React, { useState, useEffect, useRef } from "react";
 import { sendMessageRoute, recieveMessageRoute } from "../utils/APIRoutes";
 import axios from "axios";
 import ChatInput from "./ChatInput";
+import Col from "react-bootstrap/esm/Col";
+import Row from "react-bootstrap/esm/Row";
 
-export default function ChatContainer({ currentConversation, currentUser, socket }) {
+export default function ChatContainer({ currentConversation, currentUser, users, socket }) {
     const [messages, setMessages] = useState([]);
     const scrollRef = useRef();
     const [arrivalMessage, setArrivalMessage] = useState(null);
+    const usersMap = new Map();
 
     async function GetMessages(){
       const data = await JSON.parse(
         localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
       );
       const mssgs = await axios.get(`${recieveMessageRoute}/${currentConversation._id}`);
+      if(currentConversation){
+      }
       setMessages(mssgs.data);
     };
 
     useEffect(() => {
+      users.map((user) =>{
+        usersMap.set(user._id, user.username);
+      });
+      usersMap.set(currentUser._id, currentUser.username);
+      console.log(usersMap);
+
       const getCurrentChat = async () => {
         if (currentConversation) {
           GetMessages();
@@ -34,26 +45,25 @@ export default function ChatContainer({ currentConversation, currentUser, socket
         data:{
           message: msg,
           conversationId: currentConversation._id,
-          sender: currentUser,
+          sender: currentUser.username,
         }   
       });
       await axios.post(sendMessageRoute, {
         message: msg,
         conversationId: currentConversation._id,
-        sender: currentUser,
+        sender: currentUser.username,
       });
   
       const msgs = [...messages];
-      msgs.push({ fromSelf: true, message: msg });
+      msgs.push( msg );
       setMessages(msgs);
     };
 
     useEffect(() => {
       if (socket.current) {
         socket.current.on("msg-recieve", (msg) => {
-          if(msg.conversationId === currentConversation._id){
-            setArrivalMessage( msg );
-          }         
+          console.log("recieved");
+          setArrivalMessage( msg );
         });
       }
     }, []);
@@ -70,24 +80,26 @@ export default function ChatContainer({ currentConversation, currentUser, socket
 
 return(
   <div>
-    <div>
+    <h2 style={{ height: 50}}>
+            {currentConversation === undefined ? (
+            "Welcome"
+          ) : (
+            currentConversation.conversationName
+          )}
+    </h2>
+    <div style={{ height: 450 }} class="overflow-auto">
         {messages.map((message) => {
           return (
             <div>
-              <div
-                className={`message ${
-                  message.fromSelf ? "sended" : "recieved"
-                }`}
-              >
-                <div className="content ">
-                  <p>{message.message}</p>
-                </div>
-              </div>
+                <p className={`p-3 mb-2 bg-light text-dark`}> {message.message} </p>
+                <p className={`pb-3 text-end ${message.sender === currentUser.username ? " text-primary" : "text-dark"}`}> {message.sender} </p>    
             </div>
           );
         })}
-      </div>
-    <ChatInput handleSendMessage={handleSendMessage}/>
+    </div>
+    <div>
+      <ChatInput handleSendMessage={handleSendMessage}/>
+    </div>
   </div>
 );
       
