@@ -1,0 +1,264 @@
+FORMAT: 1A
+HOST: https://polls.apiblueprint.org/
+
+# Chat-app
+
+Chat-app is a simple API allowing consumers to create users, set up conversations and send text messages to each other.
+
+# Group Users
+Resources related to users in the API.
+
+## User
+A User object has the following attributes
++ username - unique string
++ password - hashed password
++ id - mongodb generated unique id
+
+## All Users [api/auth/allusers/:id]
+
++ Parameters
+    + id: (required, ObjectId) - ID of the current User
+
+### List All Users [GET]
+
+Returns array of all users, except the one who sent the request
+
++ Response 200 (application/json)
+            {
+                "status": true,
+                "users": [
+                    {
+                        "id": "6461d9a225ca47b5af7e3a1f",
+                        "username": "pavel"
+                    },
+                    {
+                        "id": "646badcb19a0ac20ba1a5799",
+                        "username": "katka"
+                    }
+                ]
+            }
+
+## Login [api/auth/login]
+
+### Login [POST]
+
+Adds User to list of online users and returns the (logged in) User object
+
++ username (string)
++ password (string)
+
++ Request (application/json)
+
+            {
+                "username":"martin",
+                "password":"12345678"
+            }
+
++ Response 200 (application/json)
+
+            {
+                "user": {
+                    "id": "645bcc2c77bdbc8ff992fb68",
+                    "username": "martin",
+                    "password": "$2b$10$6AqOjvbrA1eEQvFIEZLe5.usO2THSjLlgGe.TVabpKbdoS2q2Dsiq",
+                    "__v": 0
+                },
+                "status": true
+            }
+    
++ Response 401 (application/json)
+
+            {
+                "msg": "Incorrect Username or Password",
+                "status": false
+            }
+    
+    
+## SignUp [api/auth/signup]
+
+### SignUp [POST]
+
+Adds User to the database and returns the created User object
+
++ username (string)
++ password (string)
+
++ Request (application/json)
+
+            {
+                "username":"dominik",
+                "password":"12345678"
+            }
+
++ Response 201 (application/json)
+
+            {
+                "user": {
+                    "username": "dominik",
+                    "password": "$2b$10$7Q89PtGTAMsgOwMcIPQM8OruWtmjuqWkW5N3A9pGvey35kAcPGRc.",
+                    "id": "647374ddbe885eb2d2144fa9",
+                    "__v": 0
+                },
+                "status": true
+            }
+    
++ Response 409 (application/json)
+
+    {
+        "msg": "Username already used",
+        "status": false
+    }
+    
+## LogOut [api/auth/logout/:id]
+
++ Parameters
+    + id: (required, ObjectId) - ID of the current User
+
+### LogOut [GET]
+
+Removes user from list of online users
+
++ Response 200 (application/json)
+
+            {
+                "status": true
+            }
+
+# Group Conversations
+
+Resources related to conversations in the API.
+
+## Conversation
+Conversation object has the following attributes
++ conversationName - unique string
++ userIds - array of user ids
++ id - mongodb generated unique id
+
+## Create new [api/conversations/createnewconversation]
+
+### Create new [POST]
+
+Adds Conversation to the database and returns the created Conversation object
+
++ conversationName (string)
++ userIds (array)
+
++ Request (application/json)
+
+            {
+                "conversationName":"General conversation",
+                "userIds": [
+                    "6461d9a225ca47b5af7e3a1f",
+                    "646badcb19a0ac20ba1a5799"]
+            }
+            
++ Response 201 (application/json)
+
+            {
+                "status": true,
+                "conversation": {
+                    "conversationName": "General conversation",
+                    "userIds": [
+                    "6461d9a225ca47b5af7e3a1f",
+                        "646badcb19a0ac20ba1a5799"
+                    ],
+                    "id": "64737bf98bfbb59575cf27fa",
+                    "__v": 0
+                }
+            }
+            
+## Get all user's conversations [api/conversations/allusersconversations/:id]
+
++ Parameters
+    + id: (required, ObjectId) - ID of the current User
+
+### Get all user's conversations [GET]
+
+Returns array of Conversation objects, that current user is part of
+
++ Response 200 (application/json)
+
+            [
+                {
+                    "id": "64737bf98bfbb59575cf27fa",
+                    "conversationName": "General conversation",
+                    "userIds": [
+                    "6461d9a225ca47b5af7e3a1f",
+                    "646badcb19a0ac20ba1a5799"
+                    ]
+                }
+            ]
+
+# Group Messages
+
+Resources related to messages in the API.
+
+## Message
+Message object has the following attributes
++ message - text of the message
++ conversationId - id of conversation that message belongs to
++ sender - username of the message author
++ id - mongodb generated unique id
+
+## Send new message [api/messages/addmessage]
+
+### Send new message [POST]
+
+Adds message to the database
+
++ message (string)
++ conversationId (string)
++ sender (string)
+
++ Request (application/json)
+
+            {
+                "conversationId": "64737bf98bfbb59575cf27fa",
+                "message": "ahoj!",
+                "sender": "katka" 
+            }
+            
++ Response 200 (application/json)
+
+            {
+                "msg": "Message added successfully.",
+                "status": true
+            }
+            
++ Response 400 (application/json)
+
+            {
+                "msg": "Failed to add message to the database",
+                "status": false
+            }
+            
+## Get messages [api/messages/getmessages/:id]
+
+### Get messages [GET]
+
+Gets array of Messages that belong to selected conversation
+
++ Parameters
+    + id: (required, ObjectId) - ID of the current Conversation
+
++ Request (application/json)
+
+            {
+                "conversationId": "64737bf98bfbb59575cf27fa",
+                "message": "ahoj!",
+                "sender": "katka" 
+            }
+            
++ Response 200 (application/json)
+
+            [
+                {
+                    "id": "647381f974eb36800da4e359",
+                    "message": "ahoj!",
+                    "conversationId": "64737bf98bfbb59575cf27fa",
+                    "sender": "katka",
+                    "createdAt": "2023-05-28T16:31:53.047Z",
+                    "updatedAt": "2023-05-28T16:31:53.047Z",
+                    "__v": 0
+                }
+            ]
