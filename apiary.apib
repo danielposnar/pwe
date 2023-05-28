@@ -12,7 +12,7 @@ Resources related to users in the API.
 A User object has the following attributes
 + username - unique string
 + password - hashed password
-+ \_id - mongodb generated unique id
++ id - mongodb generated unique id (_id)
 
 ## All Users [api/auth/allusers/:id]
 
@@ -132,7 +132,7 @@ Resources related to conversations in the API.
 Conversation object has the following attributes
 + conversationName - unique string
 + userIds - array of user ids
-+ _id - mongodb generated unique id
++ id - mongodb generated unique id (_id)
 
 ## Create new [api/conversations/createnewconversation]
 
@@ -198,7 +198,7 @@ Message object has the following attributes
 + message - text of the message
 + conversationId - id of conversation that message belongs to
 + sender - username of the message author
-+ _id - mongodb generated unique id
++ id - mongodb generated unique id (_id)
 
 ## Send new message [api/messages/addmessage]
 
