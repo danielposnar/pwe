@@ -6,6 +6,8 @@ const conversationsRoutes = require("./routes/conversations");
 const messagessRoutes = require("./routes/messages");
 const app = express();
 const socket = require("socket.io");
+const path = require('path');
+
 require("dotenv").config();
 
 app.use(cors());
@@ -14,6 +16,10 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/conversations", conversationsRoutes);
 app.use("/api/messages", messagessRoutes);
+
+app.use(express.static(path.join(__dirname, '/public')));
+
+
 
 mongoose.connect(process.env.DB_URL,{
     useNewUrlParser: true,
@@ -32,7 +38,7 @@ const server = app.listen(process.env.PORT, () =>
 
 const io = socket(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: process.env.SOCKET_IO_ORIGIN,
     credentials: true,
   },
 });
