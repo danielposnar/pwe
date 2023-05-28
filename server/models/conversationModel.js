@@ -7,9 +7,6 @@ const ConversationSchema = mongoose.Schema(
       required: true,
     },
     userIds: Array,
-  },
-  {
-    timestamps: true,
   }
 );
 

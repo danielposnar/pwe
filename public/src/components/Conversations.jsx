@@ -20,13 +20,13 @@ export default function Conversations({conversations, changeConversation, socket
   return ( 
     <>
     <h2 style={{ height: 50}}>Conversations</h2>
-    <div style={{ height: 450}} class="overflow-auto">
+    <div style={{ height: 450}} className="overflow-auto">
     <Form >
       <Form.Group className="mb-3">      
       <ListGroup>
         {conversations.map((conversation, index) => {
           return (
-            <ListGroup.Item key={index}>
+            <ListGroup.Item key={conversation._id}>
               <Button variant= {`${
                     index === currentSelected ? "primary" : "secondary"}`} id={`default-${conversation._id}`} label={`${conversation.conversationName}`} key={index} style={{ width: '100%' }} onClick={() => changeCurrentConversation(index, conversation)}>
               {conversation.conversationName}

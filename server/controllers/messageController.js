@@ -4,7 +4,7 @@ module.exports.getMessages = async (req, res, next) => {
   try {
     const conversationId = req.params.id;
     const messages = await Messages.find({ conversationId: conversationId}).sort({ updatedAt: 1 });
-    return res.json(messages);
+    return res.status(200).json(messages);
   } catch (ex) {
     next(ex);
   }
@@ -19,8 +19,8 @@ module.exports.addMessage = async (req, res, next) => {
       sender: sender,
     });
 
-    if (data) return res.json({ msg: "Message added successfully." });
-    else return res.json({ msg: "Failed to add message to the database" });
+    if (data) return res.status(200).json({ msg: "Message added successfully.", "status": true });
+    else return res.status(400).json({ msg: "Failed to add message to the database.", "status": false });
   } catch (ex) {
     next(ex);
   }

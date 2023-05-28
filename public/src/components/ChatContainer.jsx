@@ -2,11 +2,21 @@ import React, { useState, useEffect, useRef } from "react";
 import { sendMessageRoute, recieveMessageRoute } from "../utils/APIRoutes";
 import axios from "axios";
 import ChatInput from "./ChatInput";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-export default function ChatContainer({ currentConversation, currentUser, socket }) {
+export default function ChatContainer({ currentConversation, currentUser, socket, conversations}) {
     const [messages, setMessages] = useState([]);
     const scrollRef = useRef();
     const [arrivalMessage, setArrivalMessage] = useState(null);
+
+    const toastOptions = {
+      position: "bottom-right",
+      autoClose: 10000,
+      pauseOnHover: true,
+      draggable: true,
+      theme: "dark",
+    };
 
     useEffect(() => {
       const getCurrentChat = async () => {
@@ -18,13 +28,22 @@ export default function ChatContainer({ currentConversation, currentUser, socket
       getCurrentChat();
     }, [currentConversation]);
 
+    useEffect(() => {
+      if (socket.current) {
+        socket.current.off("msg-recieve");
+        socket.current.on("msg-recieve", (msg) => {
+          handleNewMessage(msg);
+        });
+      }
+    }, [currentConversation]);
+
     const handleSendMessage = async (msg) => {
       const messg= {
         message: msg,
         conversationId: currentConversation._id,
         sender: currentUser.username,
       }
-      console.log(currentConversation.conversationName);
+      
       socket.current.emit("send-msg", {
         userIds : currentConversation.userIds,
         data : messg   
@@ -34,24 +53,26 @@ export default function ChatContainer({ currentConversation, currentUser, socket
 
       handleNewMessage(messg);
     };
-
-    useEffect(() => {
-      if (socket.current) {
-        socket.current.off("msg-recieve");
-        socket.current.on("msg-recieve", (msg) => {
-          handleNewMessage(msg);
-        });
-      }
-    }, [currentConversation]);
   
     useEffect(() => {
       arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
     }, [arrivalMessage]);
     
     const handleNewMessage =(message) => {
-      if(message.conversationId === currentConversation._id){
-        setArrivalMessage(message);
+      if(currentConversation){
+        if(message.conversationId === currentConversation._id){
+          setArrivalMessage(message);
+        }
+        else{
+        toast.info(`New message in ${conversations.find(x => x._id === message.conversationId).conversationName}`,
+        toastOptions);
+        }
       }
+      else{
+        toast.info(`New message in ${conversations.find(x => x._id === message.conversationId).conversationName}`,
+        toastOptions);
+      }
+      
     }
 
     useEffect(() => {
@@ -67,12 +88,12 @@ return(
             currentConversation.conversationName
           )}
     </h2>
-    <div style={{ height: 450 }} class="overflow-auto">
-        {messages.map((message) => {
+    <div style={{ height: 450 }} className="overflow-auto">
+        {messages.map((message, index) => {
           return (
-            <div>
-                <p className={`p-3 mb-2 bg-light text-dark`}> {message.message} </p>
-                <p className={`pb-3 text-end ${message.sender === currentUser.username ? " text-primary" : "text-dark"}`}> {message.sender} </p>    
+            <div key={index}>
+                <p className={`p-3 mb-2 bg-light text-dark`} key={`${message._id} text`}> {message.message} </p>
+                <p className={`pb-3 text-end ${message.sender === currentUser.username ? " text-primary" : "text-dark"}`} key={`${message._id} sender`}> {message.sender} </p>    
             </div>
           );
         })}

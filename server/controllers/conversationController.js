@@ -1,5 +1,4 @@
 const Conversation = require("../models/conversationModel");
-const bcrypt = require("bcrypt");
 
 module.exports.createNew = async (req, res, next) => {
   try {
@@ -8,7 +7,7 @@ module.exports.createNew = async (req, res, next) => {
       conversationName,
       userIds,
     });
-    return res.json({ status: true, conversation });
+    return res.status(201).json({ status: true, conversation });
   } catch (ex) {
     next(ex);
   }
@@ -24,7 +23,7 @@ module.exports.getAllUsersConversations = async (req, res, next) => {
         "userIds",
         "_id",
       ]);
-      return res.json(conversations);
+      return res.status(200).json(conversations);
     } catch (ex) {
       next(ex);
     }

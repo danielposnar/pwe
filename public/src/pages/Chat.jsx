@@ -18,7 +18,6 @@ function Chat() {
   const [currentUser, setCurrentUser] = useState(undefined);
   const [conversations, setConversations] = useState([]);
   const [newConversation, setNewConversation] = useState(null);
-  const [newMessage, setNewMessage] = useState(null);
   const [currentConversation, setCurrentConversation] = useState(undefined);
 
   async function SetCurrentUser(){
@@ -54,7 +53,7 @@ function Chat() {
 
       const  FetchContactsData = async() => {
         const data = await axios.get(`${allUsersRoute}/${currentUser._id}`);
-        setContacts(data.data);
+        setContacts(data.data.users);
       }
       FetchContactsData();
     }
@@ -94,7 +93,7 @@ function Chat() {
           {currentConversation === undefined ? (
             <NoChat />
           ) : (
-            <ChatContainer class="h-25 d-inline-block" currentConversation={currentConversation} currentUser={currentUser} socket={socket}/>
+            <ChatContainer className="h-25 d-inline-block" currentConversation={currentConversation} currentUser={currentUser} socket={socket} conversations={conversations}/>
           )}
           </Row>
         </Col>

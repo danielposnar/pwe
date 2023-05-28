@@ -109,7 +109,7 @@ export default function Contacts({ contacts, socket, handleNewConversation}) {
     <>
     <h2 style={{ height: 50}}>Users</h2>
     <Form onSubmit={handleSubmit}>
-      <div style={{ height: 450}} class="overflow-auto">
+      <div style={{ height: 450}} className="overflow-auto">
       <Form.Group className="mb-3">      
       <ListGroup>
         {contacts.map((contact, index) => {
