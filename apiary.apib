@@ -12,7 +12,7 @@ Resources related to users in the API.
 A User object has the following attributes
 + username - unique string
 + password - hashed password
-+ id - mongodb generated unique id (_id)
++ id - mongodb generated unique id
 
 ## All Users [api/auth/allusers/:id]
 
@@ -28,11 +28,11 @@ Returns array of all users, except the one who sent the request
                 "status": true,
                 "users": [
                     {
-                        "_id": "6461d9a225ca47b5af7e3a1f",
+                        "id": "6461d9a225ca47b5af7e3a1f",
                         "username": "pavel"
                     },
                     {
-                        "_id": "646badcb19a0ac20ba1a5799",
+                        "id": "646badcb19a0ac20ba1a5799",
                         "username": "katka"
                     }
                 ]
@@ -58,7 +58,7 @@ Adds User to list of online users and returns the (logged in) User object
 
             {
                 "user": {
-                    "_id": "645bcc2c77bdbc8ff992fb68",
+                    "id": "645bcc2c77bdbc8ff992fb68",
                     "username": "martin",
                     "password": "$2b$10$6AqOjvbrA1eEQvFIEZLe5.usO2THSjLlgGe.TVabpKbdoS2q2Dsiq",
                     "__v": 0
@@ -96,7 +96,7 @@ Adds User to the database and returns the created User object
                 "user": {
                     "username": "dominik",
                     "password": "$2b$10$7Q89PtGTAMsgOwMcIPQM8OruWtmjuqWkW5N3A9pGvey35kAcPGRc.",
-                    "_id": "647374ddbe885eb2d2144fa9",
+                    "id": "647374ddbe885eb2d2144fa9",
                     "__v": 0
                 },
                 "status": true
@@ -132,7 +132,7 @@ Resources related to conversations in the API.
 Conversation object has the following attributes
 + conversationName - unique string
 + userIds - array of user ids
-+ id - mongodb generated unique id (_id)
++ id - mongodb generated unique id
 
 ## Create new [api/conversations/createnewconversation]
 
@@ -162,7 +162,7 @@ Adds Conversation to the database and returns the created Conversation object
                     "6461d9a225ca47b5af7e3a1f",
                         "646badcb19a0ac20ba1a5799"
                     ],
-                    "_id": "64737bf98bfbb59575cf27fa",
+                    "id": "64737bf98bfbb59575cf27fa",
                     "__v": 0
                 }
             }
@@ -180,7 +180,7 @@ Returns array of Conversation objects, that current user is part of
 
             [
                 {
-                    "_id": "64737bf98bfbb59575cf27fa",
+                    "id": "64737bf98bfbb59575cf27fa",
                     "conversationName": "General conversation",
                     "userIds": [
                     "6461d9a225ca47b5af7e3a1f",
@@ -198,7 +198,7 @@ Message object has the following attributes
 + message - text of the message
 + conversationId - id of conversation that message belongs to
 + sender - username of the message author
-+ id - mongodb generated unique id (_id)
++ id - mongodb generated unique id
 
 ## Send new message [api/messages/addmessage]
 
@@ -253,7 +253,7 @@ Gets array of Messages that belong to selected conversation
 
             [
                 {
-                    "_id": "647381f974eb36800da4e359",
+                    "id": "647381f974eb36800da4e359",
                     "message": "ahoj!",
                     "conversationId": "64737bf98bfbb59575cf27fa",
                     "sender": "katka",
