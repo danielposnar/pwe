@@ -49,9 +49,12 @@ export default function ChatContainer({ currentConversation, currentUser, socket
         data : messg   
       });
 
-      const data = await axios.post(sendMessageRoute, messg);
-
-      handleNewMessage(messg);
+      try{
+        const data = await axios.post(sendMessageRoute, messg);
+        handleNewMessage(messg);
+      }catch(err){
+        toast.error("Error: message not sent", toastOptions);
+      }
     };
   
     useEffect(() => {

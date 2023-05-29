@@ -62,19 +62,24 @@ function SignUp() {
     event.preventDefault();
     if (handleValidation()) {
       const { username, password, passwordAgain } = values;
-      const { data } = await axios.post(signUpRoute, {
-        username,
-        password,
-      });
-      if (data.status === true) {
-        localStorage.setItem(
-          process.env.REACT_APP_LOCALHOST_KEY,
-          JSON.stringify(data.user)
-        );
-        navigate("/");
-      }else{
-        toast.error(data.msg, toastOptions);
-      }     
+      try{
+        const { data } = await axios.post(signUpRoute, {
+          username,
+          password,
+        });
+        if (data.status === true) {
+          localStorage.setItem(
+            process.env.REACT_APP_LOCALHOST_KEY,
+            JSON.stringify(data.user)
+          );
+          navigate("/");
+        }else{
+          toast.error(data.msg, toastOptions);
+        }     
+      }catch(err){
+        toast.error("Username already used", toastOptions);       
+      }
+      
     }
   };
 
